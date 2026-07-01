@@ -7,7 +7,7 @@ using SwiftlyS2.Shared.Plugins;
 
 namespace zResourcePrecacher;
 
-[PluginMetadata(Id = "zResourcePrecacher", Version = "1.0.0", Name = "zResourcePrecacher", Author = "vhming", Description = "Precache any Resource in CS2")]
+[PluginMetadata(Id = "zResourcePrecacher", Version = "1.0.1", Name = "zResourcePrecacher", Author = "vhming", Description = "Precache any Resource in CS2")]
 public partial class zResourcePrecacher : BasePlugin
 {
     private ServiceProvider? serviceProvider;
@@ -38,8 +38,7 @@ public partial class zResourcePrecacher : BasePlugin
             this.Core.Logger.LogWarning("Hotreloading zResourcePrecacher has no effect.");
         }
 
-        // Initialize Configuration using SwiftlyS2 standard options pattern
-        const string ConfigFileName = "config.json";
+        const string ConfigFileName = "config.jsonc";
         const string ConfigSection = "zResourcePrecacher";
 
         this.Core.Configuration
@@ -49,12 +48,11 @@ public partial class zResourcePrecacher : BasePlugin
                 optional: false,
                 reloadOnChange: true));
 
-        // Setup Service Provider for DI
         var services = new ServiceCollection();
         services.AddSwiftly(this.Core);
         services.AddOptionsWithValidateOnStart<PluginConfig>().BindConfiguration(ConfigSection);
         services.AddSingleton<PluginMigrations>();
-        services.AddSingleton(this); // Register current plugin instance
+        services.AddSingleton(this);
         services.AddSingleton<PrecacheContext>();
 
         this.serviceProvider = services.BuildServiceProvider();
@@ -62,7 +60,6 @@ public partial class zResourcePrecacher : BasePlugin
         this.pluginMigrations = this.serviceProvider.GetRequiredService<PluginMigrations>();
         this.precacheContext = this.serviceProvider.GetRequiredService<PrecacheContext>();
 
-        // Check config version and migrations
         var loadedConfig = this.activeConfig;
         var defaultConfig = new PluginConfig();
         if (loadedConfig.version < defaultConfig.version)
@@ -79,10 +76,11 @@ public partial class zResourcePrecacher : BasePlugin
             }
         }
 
-        // Hook config change logic to log changes and recheck version
         this.configMonitor.OnChange(newConfig =>
         {
             this.Core.Logger.LogInformation("Configuration reloaded.");
+            this.precacheContext?.initialize();
+
             if (newConfig.version < defaultConfig.version)
             {
                 this.Core.Logger.LogWarning("Configuration is out of date. Consider updating the plugin.");
@@ -93,23 +91,7 @@ public partial class zResourcePrecacher : BasePlugin
             }
         });
 
-        // Initialize Precache Context
         this.precacheContext.initialize();
-
-        if (loadedConfig.resourceList.Count == 0)
-        {
-            this.Core.Logger.LogWarning("'Resources' list is empty, did you forget to upload the workshop package, or populate the list with resources?");
-        }
-
-        foreach (string resourcePath in loadedConfig.resourceList)
-        {
-            if (!this.precacheContext.addResource(resourcePath))
-            {
-                this.Core.Logger.LogWarning("Duplicate entry for resource: '{0}'", resourcePath);
-            }
-        }
-
-        // Register the resource precaching event listener
         this.Core.Event.OnPrecacheResource += this.precacheContext.onPrecacheResource;
     }
 
@@ -117,7 +99,6 @@ public partial class zResourcePrecacher : BasePlugin
     {
         if (this.precacheContext != null)
         {
-            // Unregister event handler to prevent memory leaks
             this.Core.Event.OnPrecacheResource -= this.precacheContext.onPrecacheResource;
         }
 

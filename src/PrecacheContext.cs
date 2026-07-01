@@ -48,6 +48,21 @@ public sealed class PrecacheContext
 
     public void initialize()
     {
+        if (!Directory.Exists(this.assetsDirectory))
+        {
+            try
+            {
+                Directory.CreateDirectory(this.assetsDirectory);
+                this.logger.LogInformation("Created Assets directory at: '{0}'", this.assetsDirectory);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Failed to create Assets directory: {0}", ex.Message);
+            }
+        }
+
+        this.resources.Clear();
+
         if (Directory.Exists(this.assetsDirectory))
         {
             foreach (string vpkPath in Directory.EnumerateFiles(this.assetsDirectory, "*.vpk", SearchOption.AllDirectories))
@@ -101,9 +116,21 @@ public sealed class PrecacheContext
                 }
             }
         }
+
+        var currentConfig = this.plugin.activeConfig;
+        if (currentConfig.resourceList.Count == 0)
+        {
+            this.logger.LogWarning("'Resources' list is empty in config, did you forget to populate it?");
+        }
         else
         {
-            this.logger.LogInformation("Assets directory does not exist, skipping VPK loading: '{0}'", this.assetsDirectory);
+            foreach (string resourcePath in currentConfig.resourceList)
+            {
+                if (!this.addResource(resourcePath))
+                {
+                    this.logger.LogWarning("Duplicate entry for resource in configuration: '{0}'", resourcePath);
+                }
+            }
         }
     }
 

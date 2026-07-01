@@ -24,7 +24,7 @@ bld/
 [Ll]og/
 [Ll]ogs/
 [Ee]xclude_build/
-# [Ff]ully_docs/
+[Ff]ully_docs/
 [Bb]uild
 
 # .NET Core

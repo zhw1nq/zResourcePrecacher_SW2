@@ -1,56 +1,59 @@
 <div align="center">
-  <h2><strong>zResourcePrecacher</strong></h2>
-  <h3>Precache any Resource in CS2 (SwiftlyS2 Plugin)</h3>
-  <p>This plugin is ported from the original CounterStrikeSharp version by AI.</p>
+  <h1>zResourcePrecacher</h1>
+  <p><strong>Precache custom resources during map load to eliminate missing assets and reduce in-game stuttering in CS2.</strong></p>
+  <p>
+    <a href="https://github.com/swiftly-solution/swiftlys2"><img src="https://img.shields.io/badge/Platform-SwiftlyS2-orange?style=flat-square" alt="Platform"></a>
+    <img src="https://img.shields.io/badge/.NET-10-blue?style=flat-square" alt=".NET Version">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+  </p>
 </div>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/platform-swiftlys2-orange" alt="Platform">
-  <img src="https://img.shields.io/badge/dotnet-10.0-blue" alt=".NET Version">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
-</p>
 
 ---
 
-## 📌 About The Project
+## 📌 About
 
-**zResourcePrecacher** is a SwiftlyS2 plugin designed for Counter-Strike 2 that automatically precaches customized game resources (models, materials, sounds, particle effects, etc.) during map loads. Precaching resources ensures that players don't experience stutter, lag, or missing assets when custom models or effects are spawned in-game.
+**zResourcePrecacher** is a plugin for **SwiftlyS2** that automatically precaches custom resources when a map starts. It scans custom Workshop `.vpk` packages as well as manually configured resources, ensuring all assets are loaded before gameplay begins. This helps prevent missing models, purple/black error textures, missing sounds, particle loading delays, and first-use stuttering.
 
-This project is a port of the original CSSharp plugin:
-🔗 **Original Repository**: [KillStr3aK/ResourcePrecacher](https://github.com/KillStr3aK/ResourcePrecacher)  
-🤖 **Ported by**: Antigravity (Advanced Agentic Coding AI at Google DeepMind)
+* **Original CounterStrikeSharp version**: [KillStr3aK/ResourcePrecacher](https://github.com/KillStr3aK/ResourcePrecacher)
+* **SwiftlyS2 Port**: Ported and adapted for SwiftlyS2 by vhming with AI.
 
 ---
 
 ## ✨ Features
 
-- **Automated VPK Scan**: Place your custom workshop `.vpk` packages in the `Assets/` directory, and the plugin will automatically parse and precache all valid assets inside them.
-- **Custom Resource List**: Explicitly specify paths of assets you want to precache directly in the JSON configuration file.
-- **Config Hot-Reload**: Configuration changes are monitored and reloaded automatically without restarting the server.
-- **Version Migration Helper**: Automatically warns and guides server owners if their configuration file is out of date.
-- **Clean Architecture**: Written in .NET 10.0 using Dependency Injection and modern, type-safe API patterns.
+* **Automatic VPK Scanning**: Scans `.vpk` files inside the `Assets/` folder and automatically precaches all supported resources inside them (only reads directory `.vpk` files, ignoring sub-parts).
+* **Manual Resource List**: Precache specific individual resource paths configured inside `config.jsonc`.
+* **Hot Reload**: Configuration changes are detected and reloaded automatically without restarting the server.
+* **Version Checking**: Warns when an outdated configuration schema is detected and provides migration guides.
+* **Modern & Clean**: Built with C# using .NET 10, Dependency Injection, and type-safe APIs.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installation
 
-### Prerequisites
+### Requirements
+* **SwiftlyS2 Server Environment**
+* **.NET 10 SDK** (only needed if compiling from source)
 
-- [SwiftlyS2 CS2 Server Environment](https://github.com/swiftly-solution/swiftlys2)
-- .NET 10.0 SDK (only needed if building from source)
-
-### Installation
-
-1. Download or publish the compiled build.
-2. Place the `zResourcePrecacher` folder inside your server's `addons/swiftlys2/plugins/` directory.
-3. (Optional) Place custom workshop `.vpk` files into `addons/swiftlys2/plugins/zResourcePrecacher/Assets/`.
-4. Start/Restart the server. A default configuration file will be automatically generated at `addons/swiftlys2/configs/plugins/zResourcePrecacher/config.json`.
+### Steps
+1. Place the plugin directory in:
+   ```text
+   addons/swiftlys2/plugins/zResourcePrecacher/
+   ```
+2. (Optional) Put Workshop `.vpk` packages inside:
+   ```text
+   addons/swiftlys2/plugins/zResourcePrecacher/Assets/
+   ```
+3. Start or restart your server. The plugin will automatically create the default config file at:
+   ```text
+   addons/swiftlys2/configs/plugins/zResourcePrecacher/config.jsonc
+   ```
 
 ---
 
 ## ⚙️ Configuration
 
-The default generated configuration (`config.json`) looks like this:
+Default `config.jsonc` file layout:
 
 ```json
 {
@@ -62,26 +65,59 @@ The default generated configuration (`config.json`) looks like this:
 }
 ```
 
-### Options:
-- **`Resources`**: A list of paths to individual assets you wish to precache. (e.g. `characters/models/custom_player.vmdl`).
-- **`Log`**: Set to `true` to print detailed precaching logs in the server console; set to `false` to disable.
-- **`Version`**: The configuration schema version. Do not modify this manually.
+### Options
+* **`Resources`**: List of specific custom asset paths to precache.
+  ```json
+  "Resources": [
+    "characters/models/custom_player.vmdl",
+    "materials/custom/player.vmat",
+    "particles/custom/fire.vpcf",
+    "sounds/custom/music.vsnd"
+  ]
+  ```
+* **`Log`**: Set to `true` to enable verbose console logs during precaching; `false` to disable.
+* **`Version`**: The configuration structure version (do not edit manually).
 
 ---
 
-## 🛠️ Building from Source
+## 🛠️ Building
 
-To compile the plugin yourself:
+To compile the plugin from source:
 
 ```bash
-# Clone the repository and navigate to directory
+# Clone the repository
+git clone <repository>
 cd zResourcePrecacher_SW2
 
 # Build the project
 dotnet build
 
-# Publish the project for distribution
+# Publish for production release
 dotnet publish -c Release
 ```
+Compiled release files are placed in:
+```text
+build/publish/zResourcePrecacher/
+```
 
-The output and ready-to-use plugin package will be located in `build/publish/zResourcePrecacher/`.
+---
+
+## 📂 Project Structure
+
+```text
+zResourcePrecacher/
+├── Assets/                 # Workshop VPK folder (created automatically)
+├── src/                    # Plugin source files
+│   ├── zResourcePrecacher.cs
+│   ├── PluginConfig.cs
+│   ├── PluginMigrations.cs
+│   └── PrecacheContext.cs
+├── resources/              # Static plugin files and templates
+└── zResourcePrecacher.csproj
+```
+
+---
+
+<div align="center">
+  <p>Made with ❤️ for the SwiftlyS2 Community</p>
+</div>
