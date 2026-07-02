@@ -1,18 +1,22 @@
 <div align="center">
   <h1>zResourcePrecacher</h1>
-  <p><strong>Precache custom resources during map load to eliminate missing assets and reduce in-game stuttering in CS2.</strong></p>
+  <p><strong>Precache any Resource in CS2.</strong></p>
   <p>
-    <a href="https://github.com/swiftly-solution/swiftlys2"><img src="https://img.shields.io/badge/Platform-SwiftlyS2-orange?style=flat-square" alt="Platform"></a>
-    <img src="https://img.shields.io/badge/.NET-10-blue?style=flat-square" alt=".NET Version">
-    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+    <a href="https://github.com/swiftly-solution/swiftlys2"><img src="upload://9FgzMGUaXfQ2z6enD1GU5P4Dyfa.svg" alt="Platform"></a>
+    <img src="upload://5D7z9a67wMEpmHQY79pSubs65F.svg" alt=".NET Version">
+    <img src="upload://yDx742gCfHrMumfsqVdDlNJF06V.svg" alt="License">
   </p>
 </div>
+
+## 🔗 Repository
+
+https://github.com/zhw1nq/zResourcePrecacher_SW2
 
 ---
 
 ## 📌 About
 
-**zResourcePrecacher** is a plugin for **SwiftlyS2** that automatically precaches custom resources when a map starts. It scans custom Workshop `.vpk` packages as well as manually configured resources, ensuring all assets are loaded before gameplay begins. This helps prevent missing models, purple/black error textures, missing sounds, particle loading delays, and first-use stuttering.
+**zResourcePrecacher** is a plugin for **SwiftlyS2** that automatically precaches custom resources when a map starts. It scans custom Workshop `.vpk` packages as well as manually configured resources, ensuring all assets are loaded before gameplay begins. This helps prevent missing models, purple/black error textures, missing sounds, particle loading delays.
 
 * **Original CounterStrikeSharp version**: [KillStr3aK/ResourcePrecacher](https://github.com/KillStr3aK/ResourcePrecacher)
 * **SwiftlyS2 Port**: Ported and adapted for SwiftlyS2 by vhming with AI.
